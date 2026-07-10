@@ -77,12 +77,24 @@ class SimplePaint:
         self.start_y = None
         self.current_shape = None
         self.selected_item = None
+
         
         # --- Interface Gráfica (GUI) ---
         
         # Painel de ferramentas (Top)
         self.toolbar = tk.Frame(root, bg="lightgray", padding=5)
         self.toolbar.pack(side=tk.TOP, fill=tk.X)
+        
+        #Botões de cores 
+        self.btn_red = tk.Button(self.toolbar, text="Vermelho", bg="red", fg="white", command=lambda: self.change_color("red"))
+        self.btn_red.pack(side=tk.LEFT, padx=5)
+
+        self.btn_blue = tk.Button(self.toolbar, text="Azul", bg="blue", fg="white", command=lambda: self.change_color("blue"))
+        self.btn_blue.pack(side=tk.LEFT, padx=5)
+
+        self.btn_yellow = tk.Button(self.toolbar, text="Amarelo", bg="yellow", command=lambda: self.change_color("yellow"))
+        self.btn_yellow.pack(side=tk.LEFT, padx=5)
+
         
         # Botões de ferramentas
         self.btn_rect = tk.Button(self.toolbar, text="Retângulo", command=lambda: self.set_tool("Retângulo"), relief=tk.SUNKEN)
@@ -160,15 +172,12 @@ class SimplePaint:
             # Redimensiona a figura que está sendo criada em tempo real
             self.canvas.coords(self.current_shape, self.start_x, self.start_y, cur_x, cur_y)
 
-    def on_button_release(self, event):
-        """Finaliza a ação ao soltar o botão do mouse."""
-        if self.current_shape:
-            # Muda a cor da borda para preto para indicar que a criação terminou
-            self.canvas.itemconfig(self.current_shape, outline="black")
+    def change_color(self, color_name):
+    """Muda a cor de preenchimento da figura selecionada atual."""
+    # Só muda a cor se a ferramenta atual for 'Mover' e houver um item selecionado
+    if self.current_tool == "Mover" and self.selected_item:
+        self.canvas.itemconfig(self.selected_item, fill=color_name)
         
-        # Limpa as variáveis de controle de criação/seleção
-        self.current_shape = None
-        self.selected_item = None
 
 
 # Inicialização do programa
