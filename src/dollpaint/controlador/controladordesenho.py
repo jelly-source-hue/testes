@@ -62,7 +62,7 @@ class controladordesenho:
         self.desenhar_figuras()
         self.desenhar_figura_nova()
 
-    #MUDANÇA: gerenciamento de cliques
+    #MUDANÇA: gerenciamento de cliques, deixando o nome mais genérico
     def vincular_eventos(self):
         self.canvas.bind("<Button-1>", self.ao_clicar) #iniciar
         self.canvas.bind("<B1-Motion>", self.ao_mover) #atualizar
