@@ -17,5 +17,6 @@ class circulo(figura):
             y_centro + raio,
             outline=self.c_traco,
             fill=self.c_preenchimento,
-            dash=dash
+            dash=dash,
+            tags="movivel"
         )
