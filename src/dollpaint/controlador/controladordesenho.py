@@ -36,6 +36,8 @@ class controladordesenho:
         
         #Variaveis para selecao
         self.figura_selecionada = None #o canvas nao tem figura ainda
+        self.inicio_x = 0
+        self.inicio_y = 0
         
     
 
@@ -68,27 +70,66 @@ class controladordesenho:
         self.canvas.bind("<B1-Motion>", self.ao_mover) #atualizar
         self.canvas.bind("<Motion>", self.ao_mover)
         self.canvas.bind("<ButtonRelease-1>", self.ao_soltar) #incluir
-        self.canvas.bind("<Double-Button-1>", self.finalizar_poligono)
+        self.canvas.bind("<Double-Button-1>", self.duplo_clique)
 
-    def ao_clicar(self, event): 
+    def ao_clicar(self, event):
+        #Seleção
+        # Encontra o objeto mais próximo do clique do mouse
+        # O método find_closest retorna uma tupla com o ID do objeto
+        item = self.canvas.find_closest(event.x, event.y)
+        if item:
+            tags = self.canvas.gettags(item[0])
+            # Verifica se o objeto clicado tem a tag "movivel"
+            if "movivel" in tags:
+                self.figura_selecionada = item[0]
+                self.inicio_x = event.x
+                self.inicio_y = event.y
+                
+                # Opcional: Dar um feedback visual (ex: adicionar uma borda preta)
+                self.canvas.itemconfig(self.figura_selecionada, outline="red", width=3)
+        #Desenho
+        else:     
             self.estado_atual.iniciar_figura_nova(event, self) 
             self.desenhar_figuras()
             self.desenhar_figura_nova()
     
-    def ao_mover(self, event):  
+    def ao_mover(self, event):
+        #Seleção
+        if self.figura_selecionada:
+            # Calcula o quanto o mouse se moveu desde o último frame
+            dx = event.x - self.inicio_x
+            dy = event.y - self.inicio_y
+            
+            # Move o objeto selecionado pela diferença de distância
+            self.canvas.move(self.objeto_selecionado, dx, dy)
+            
+            # Atualiza a posição inicial para o próximo movimento
+            self.inicio_x = event.x
+            self.inicio_y = event.y
+
+        #Desenho
         if self.figura_atual is not None:
             self.estado_atual.atualizar_figura_nova(event, self)
             self.desenhar_figuras()
             self.desenhar_figura_nova()
         else:
             return
-    def ao_soltar(self, event): 
+    def ao_soltar(self, event):
+        #Seleção
+        if self.figura_selecionada:
+            # Remove o feedback visual ao soltar o clique
+            self.canvas.itemconfig(self.objeto_selecionado, outline="", width=1)
+            self.figura_selecionada = None
+
+        #Desenho
+        else:
             self.estado_atual.incluir_figura_nova(event, self)
             self.desenhar_figuras()
             self.desenhar_figura_nova()
         
     
-    def finalizar_poligono(self, event):
+    def duplo_clique(self, event):
+            #Desenho
             self.estado_atual.finalizar_poligono(event, self)
             self.desenhar_figuras()
             self.desenhar_figura_nova()
